@@ -1,0 +1,38 @@
+package com.company;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Lucky {
+    static AtomicInteger atomicX = new AtomicInteger(0);
+    static AtomicInteger count = new AtomicInteger(0);
+
+    static class LuckyThread extends Thread {
+        @Override
+        public void run() {
+            System.out.printf("%s started... \n", Thread.currentThread().getName());
+            int x;
+            while ((x = atomicX.incrementAndGet()) < 999999) {
+                x++;
+                if ((x % 10) + (x / 10) % 10 + (x / 100) % 10 == (x / 1000)
+                        % 10 + (x / 10000) % 10 + (x / 100000) % 10) {
+                    System.out.println(x);
+                    count.incrementAndGet();
+                }
+            }
+            System.out.printf("%s finished... \n", Thread.currentThread().getName());
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread t1 = new LuckyThread();
+        Thread t2 = new LuckyThread();
+        Thread t3 = new LuckyThread();
+        t1.start();
+        t2.start();
+        t3.start();
+        t1.join();
+        t2.join();
+        t3.join();
+        System.out.println("Total: " + count);
+    }
+}
